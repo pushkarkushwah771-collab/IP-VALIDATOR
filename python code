@@ -1,0 +1,125 @@
+from flask import Flask, jsonify, render_template, request
+import ipaddress
+import requests
+
+app = Flask(__name__)
+
+
+def classify_ip(value: str):
+    try:
+        if '/' in value:
+            network = ipaddress.ip_network(value, strict=False)
+            version = f"IPv{network.version}"
+            target = network.network_address
+            fmt = 'CIDR block'
+        else:
+            target = ipaddress.ip_address(value)
+            version = f"IPv{target.version}"
+            fmt = 'Single address'
+
+        if target.is_loopback:
+            scope = 'Loopback'
+        elif target.is_private:
+            scope = 'Private network' if target.version == 4 else 'Unique local'
+        elif target.is_link_local:
+            scope = 'Link-local'
+        elif target.is_multicast:
+            scope = 'Multicast'
+        elif target.is_reserved:
+            scope = 'Reserved'
+        elif getattr(target, 'is_unspecified', False):
+            scope = 'Unspecified'
+        else:
+            scope = 'Public address' if target.version == 4 else 'Global unicast'
+
+        risk = 'Verify exposure' if 'Public' in scope or 'Global' in scope else 'Usually internal use'
+
+        return {
+            'valid': True,
+            'status': f'Valid {version}' if fmt == 'Single address' else f'Valid {version} CIDR',
+            'message': 'The input format is correct and ready for network use or further checks.',
+            'details': [
+                {'label': 'Protocol', 'value': version},
+                {'label': 'Scope', 'value': scope},
+                {'label': 'Format', 'value': fmt},
+                {'label': 'Risk note', 'value': risk}
+            ]
+        }
+    except ValueError:
+        return {
+            'valid': False,
+            'status': 'Invalid format',
+            'message': 'This input does not match standard IPv4, IPv6, or CIDR notation.',
+            'details': [
+                {'label': 'Protocol', 'value': 'Unknown'},
+                {'label': 'Scope', 'value': 'Unclassified'},
+                {'label': 'Format', 'value': 'Malformed input'},
+                {'label': 'Risk note', 'value': 'Fix structure before use'}
+            ]
+        }
+
+
+@app.route('/')
+def home():
+    return render_template('ip-validator.html')
+
+
+@app.route('/api/validate')
+def validate_ip():
+    value = request.args.get('ip', '').strip()
+    if not value:
+        return jsonify({
+            'valid': None,
+            'status': 'Waiting for input',
+            'message': 'Type an address to inspect its structure and scope.',
+            'details': [
+                {'label': 'Protocol', 'value': '—'},
+                {'label': 'Scope', 'value': '—'},
+                {'label': 'Format', 'value': '—'},
+                {'label': 'Risk note', 'value': '—'}
+            ]
+        })
+    return jsonify(classify_ip(value))
+
+
+@app.route('/api/detect-ip')
+def detect_ip():
+    try:
+        response = requests.get('https://api.ipify.org?format=json', timeout=10)
+        response.raise_for_status()
+        return jsonify(response.json())
+    except requests.RequestException:
+        return jsonify({'error': 'Could not detect public IP right now.'}), 502
+
+
+@app.route('/api/lookup')
+def lookup_ip():
+    value = request.args.get('ip', '').strip()
+    if not value:
+        return jsonify({'error': 'No IP provided.'}), 400
+
+    try:
+        response = requests.get(f'https://ipapi.co/{value}/json/', timeout=10)
+        response.raise_for_status()
+        data = response.json()
+        if data.get('error'):
+            return jsonify({'error': data.get('reason', 'Lookup failed.')}), 400
+
+        return jsonify({
+            'valid': True,
+            'status': 'Live API result',
+            'message': 'The IP was enriched with public lookup metadata from a live API request.',
+            'details': [
+                {'label': 'Protocol', 'value': data.get('version', 'Unknown')},
+                {'label': 'Scope', 'value': data.get('country_name', 'Unknown')},
+                {'label': 'Format', 'value': data.get('org') or data.get('network', 'Standard IP')},
+                {'label': 'Risk note', 'value': ', '.join(filter(None, [data.get('city'), data.get('region')])) or 'No city data'}
+            ],
+            'raw': data
+        })
+    except requests.RequestException:
+        return jsonify({'error': 'Could not reach lookup provider right now.'}), 502
+
+
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0', port=5000)
