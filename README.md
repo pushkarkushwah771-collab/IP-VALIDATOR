@@ -13,3 +13,54 @@ Live IP lookup using Python backend
 Responsive UI with dark/light theme toggle
 
 Flask backend with JSON API routes
+Project Structure
+text
+ip-validator-flask/
+├── app.py
+├── requirements.txt
+├── README.md
+├── .gitignore
+├── templates/
+│   └── ip-validator.html
+└── static/
+    ├── style.css
+    └── app.js
+Installation
+bash
+pip install -r requirements.txt
+Run
+bash
+python app.py
+Open in browser:
+
+text
+http://127.0.0.1:5000/
+API Routes
+/api/validate?ip=VALUE
+
+/api/detect-ip
+
+/api/lookup?ip=VALUE
+
+Upload to GitHub
+Option 1: Upload in browser
+Create a new repository on GitHub.
+
+Open the repository.
+
+Click Add file > Upload files.
+
+Drag all project files and folders into GitHub.
+
+Commit directly to main.
+
+Option 2: Push with Git
+bash
+git init
+git add .
+git commit -m "Initial commit - IP Validator"
+git branch -M main
+git remote add origin https://github.com/YOUR-USERNAME/YOUR-REPO.git
+git push -u origin main
+Notes
+Replace YOUR-USERNAME and YOUR-REPO with your real GitHub repository details.
