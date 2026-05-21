@@ -66,13 +66,4 @@ Drag all project files and folders into GitHub.
 
 Commit directly to main.
 
-Option 2: Push with Git
-bash
-git init
-git add .
-git commit -m "Initial commit - IP Validator"
-git branch -M main
-git remote add origin https://github.com/YOUR-USERNAME/YOUR-REPO.git
-git push -u origin main
-Notes
-Replace YOUR-USERNAME and YOUR-REPO with your real GitHub repository details.
+
