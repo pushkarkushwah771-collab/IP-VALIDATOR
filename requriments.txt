@@ -1,0 +1,14 @@
+
+Flask==3.1.0
+requests==2.32.3
+A requirements.txt file is a plain text list of Python packages, usually one dependency per line, and pip installs them with pip install -r requirements.txt.
+
+Install command
+bash
+pip install -r requirements.txt
+That is the standard pip command for installing all dependencies listed in the file.
+
+Why these packages
+Flask is needed because your app imports Flask, jsonify, render_template, and request from the flask package.
+
+requests is needed because your backend uses the requests library to call IP APIs.
