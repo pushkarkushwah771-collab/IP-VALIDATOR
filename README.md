@@ -16,12 +16,19 @@ Flask backend with JSON API routes
 Project Structure
 text
 ip-validator-flask/
+
 ├── app.py
+
 ├── requirements.txt
+
 ├── README.md
+
 ├── .gitignore
+
 ├── templates/
+
 │   └── ip-validator.html
+
 └── static/
     ├── style.css
     └── app.js
@@ -34,16 +41,21 @@ python app.py
 Open in browser:
 
 text
+
 http://127.0.0.1:5000/
 API Routes
+
 /api/validate?ip=VALUE
 
 /api/detect-ip
 
 /api/lookup?ip=VALUE
 
+
 Upload to GitHub
+
 Option 1: Upload in browser
+
 Create a new repository on GitHub.
 
 Open the repository.
