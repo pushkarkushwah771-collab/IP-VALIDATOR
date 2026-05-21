@@ -49,9 +49,10 @@ API Routes
 /api/validate?ip=VALUE
 
 /api/detect-ip
+/api/lookup?ip=VALUE
 <img width="829" height="547" alt="Screenshot 2026-05-21 202217" src="https://github.com/user-attachments/assets/cd36b3bc-2a47-463b-b259-1f884f582a77" />
 
-/api/lookup?ip=VALUE
+
 
 
 
