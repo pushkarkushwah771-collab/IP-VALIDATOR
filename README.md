@@ -52,18 +52,5 @@ API Routes
 /api/lookup?ip=VALUE
 
 
-Upload to GitHub
-
-Option 1: Upload in browser
-
-Create a new repository on GitHub.
-
-Open the repository.
-
-Click Add file > Upload files.
-
-Drag all project files and folders into GitHub.
-
-Commit directly to main.
 
 
